@@ -1,0 +1,16 @@
+{
+  "name": "Style B - Cinematic/Atmospheric",
+  "basePrompt": "minimalist cinematic scene, solitary subject, soft atmospheric lighting, muted natural colors, volumetric light, high negative space, introspective mood, slightly surreal, painterly texture, centered composition, calm and contemplative",
+  "generation": {
+    "landscape": {
+      "size": "1792x1024",
+      "quality": "hd",
+      "style": "natural"
+    },
+    "square": {
+      "size": "1024x1024",
+      "quality": "hd",
+      "style": "natural"
+    }
+  }
+}

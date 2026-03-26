@@ -1,0 +1,16 @@
+{
+  "name": "Style A - Tech/Futuristic",
+  "basePrompt": "minimalist futuristic scene, advanced artificial intelligence environment, clean high-tech atmosphere, soft volumetric lighting, subtle glow, muted teal, blue and gold color palette, slightly desaturated, high negative space, cinematic composition, centered or isolated subject, smooth gradients, reflective surfaces, calm and contemplative mood, abstract digital structures, data flow patterns, neural network inspired forms, ultra clean, no clutter, soft shadows, atmospheric depth, slightly surreal but grounded, premium aesthetic, high detail",
+  "generation": {
+    "landscape": {
+      "size": "1792x1024",
+      "quality": "hd",
+      "style": "natural"
+    },
+    "square": {
+      "size": "1024x1024",
+      "quality": "hd",
+      "style": "natural"
+    }
+  }
+}

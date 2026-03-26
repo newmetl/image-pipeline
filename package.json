@@ -1,0 +1,15 @@
+{
+  "name": "image-pipeline",
+  "version": "2.0.0",
+  "description": "AI image generation pipeline – HTML template based",
+  "main": "generate.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "preview": "node preview.js"
+  },
+  "dependencies": {
+    "openai": "^4.20.0",
+    "puppeteer": "^24.40.0",
+    "sharp": "^0.34.5"
+  }
+}

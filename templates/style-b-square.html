@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Style B – Cinematic/Atmospheric (Square 1024×1024)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1024px;
+      height: 1024px;
+      overflow: visible;
+      position: relative;
+      font-family: 'Sorts Mill Goudy', serif;
+
+      /* ─── Default background for browser preview ───────────────────────────
+         This gradient is only visible when editing locally in the browser.
+         At render time, the generator replaces it with the DALL-E image.
+      ──────────────────────────────────────────────────────────────────────── */
+      background: linear-gradient(160deg, #1a1210 0%, #2e1f18 35%, #1a1510 65%, #0d0c0a 100%);
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* ─── Sanftes Vignette-Overlay ─── */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 100%);
+      pointer-events: none;
+    }
+
+    /* ─── Gradient overlay (links nach rechts ausfadend) ─── */
+    .gradient-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.6) 50%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ─── Text-Block ─── */
+    #text-block {
+      position: absolute;
+      top: 80px;
+      left: 80px;
+      max-width: 75%;
+      z-index: 10;
+    }
+
+    #text-block p {
+      font-family: 'Sorts Mill Goudy', serif;
+      font-weight: 400;
+      font-size: 72px;
+      line-height: 1.3;
+      color: #f5f0eb;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+      margin: 0;
+      letter-spacing: 0.01em;
+    }
+  </style>
+</head>
+<body>
+  <div class="vignette"></div>
+  <div class="gradient-overlay"></div>
+
+  <!-- ─── Text-Block ─────────────────────────────────────────────────────────
+       id="text-block" NICHT entfernen – der Generator ersetzt diesen Inhalt.
+       Für die Browser-Vorschau kannst du hier Beispieltext eintragen.
+  ──────────────────────────────────────────────────────────────────────────── -->
+  <div id="text-block">
+    <p>Your Headline</p>
+    <p>Goes Here</p>
+  </div>
+
+  <script>
+    /* ─── Scale-to-fit: shrink font until text fits canvas height ─── */
+    (function() {
+      function scaleToFit() {
+        var block = document.getElementById('text-block');
+        if (!block) return;
+        var canvasH = document.body.offsetHeight;
+        var ps = block.querySelectorAll('p');
+        if (!ps.length) return;
+        ps.forEach(function(p) { p.style.fontSize = ''; });
+        var baseFontSize = parseFloat(window.getComputedStyle(ps[0]).fontSize);
+        var minFontSize = baseFontSize * 0.4;
+        var fontSize = baseFontSize;
+        while (block.scrollHeight + block.offsetTop > canvasH && fontSize > minFontSize) {
+          fontSize -= 1;
+          ps.forEach(function(p) { p.style.fontSize = fontSize + 'px'; });
+        }
+      }
+      function scheduleScaleToFit() {
+        var fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+        fontsReady.then(function() {
+          requestAnimationFrame(function() { requestAnimationFrame(scaleToFit); });
+        });
+      }
+      var observer = new MutationObserver(scheduleScaleToFit);
+      document.addEventListener('DOMContentLoaded', function() {
+        var block = document.getElementById('text-block');
+        if (block) observer.observe(block, { childList: true, characterData: true, subtree: true });
+        scheduleScaleToFit();
+      });
+    })();
+  </script>
+</body>
+</html>
