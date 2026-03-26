@@ -45,7 +45,7 @@
     #text-block {
       position: absolute;
       top: 3.3vw;
-      left: 3.3vw;
+      left: 5vw;
       max-width: 54%;
       z-index: 10;
     }
@@ -74,7 +74,7 @@
   </div>
 
   <script>
-    /* ─── Scale-to-fit: shrink font until text fits canvas height ─── */
+    /* ─── Scale-to-fit: auto-size font so text fills ~50–100% of canvas ─── */
     (function() {
       function scaleToFit() {
         var block = document.getElementById('text-block');
@@ -82,24 +82,48 @@
         var canvasH = document.body.offsetHeight;
         var ps = block.querySelectorAll('p');
         if (!ps.length) return;
-        // Reset to CSS default first
+
+        // Reset to CSS default
         ps.forEach(function(p) { p.style.fontSize = ''; });
         var baseFontSize = parseFloat(window.getComputedStyle(ps[0]).fontSize);
         var minFontSize = baseFontSize * 0.4;
+        var maxFontSize = baseFontSize * 3;
         var fontSize = baseFontSize;
-        while (block.scrollHeight + block.offsetTop > canvasH && fontSize > minFontSize) {
+        var topPad = block.offsetTop;
+        var bottomPad = topPad;              // mirror top spacing at bottom
+        var maxBottom = topPad + (canvasH - topPad - bottomPad) * 0.9; // 90% of available area
+        var targetMinH = canvasH * 0.5;      // text should fill ≥50% of canvas
+
+        function setSize(s) { ps.forEach(function(p) { p.style.fontSize = s + 'px'; }); }
+        function textBottom() { return topPad + block.scrollHeight; }
+        function fits() { return textBottom() <= maxBottom; }
+
+        // Scale UP if text is too small (< 50% of canvas)
+        if (textBottom() < targetMinH) {
+          while (fontSize < maxFontSize) {
+            fontSize += 1;
+            setSize(fontSize);
+            if (!fits()) {
+              fontSize -= 1;
+              setSize(fontSize);
+              break;
+            }
+          }
+        }
+
+        // Scale DOWN if text overflows available area
+        while (!fits() && fontSize > minFontSize) {
           fontSize -= 1;
-          ps.forEach(function(p) { p.style.fontSize = fontSize + 'px'; });
+          setSize(fontSize);
         }
       }
-      // Run after fonts load AND after any injected scripts modify the DOM
+
       function scheduleScaleToFit() {
         var fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
         fontsReady.then(function() {
           requestAnimationFrame(function() { requestAnimationFrame(scaleToFit); });
         });
       }
-      // Watch for text-block content changes (preview server + Puppeteer inject text)
       var observer = new MutationObserver(scheduleScaleToFit);
       document.addEventListener('DOMContentLoaded', function() {
         var block = document.getElementById('text-block');

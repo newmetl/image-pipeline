@@ -53,7 +53,7 @@
     #text-block {
       position: absolute;
       top: 60px;
-      left: 60px;
+      left: 90px;
       max-width: 54%;
       z-index: 10;
     }
@@ -84,7 +84,7 @@
   </div>
 
   <script>
-    /* ─── Scale-to-fit: shrink font until text fits canvas height ─── */
+    /* ─── Scale-to-fit: auto-size font so text fills ~50–100% of canvas ─── */
     (function() {
       function scaleToFit() {
         var block = document.getElementById('text-block');
@@ -92,15 +92,39 @@
         var canvasH = document.body.offsetHeight;
         var ps = block.querySelectorAll('p');
         if (!ps.length) return;
+
         ps.forEach(function(p) { p.style.fontSize = ''; });
         var baseFontSize = parseFloat(window.getComputedStyle(ps[0]).fontSize);
         var minFontSize = baseFontSize * 0.4;
+        var maxFontSize = baseFontSize * 3;
         var fontSize = baseFontSize;
-        while (block.scrollHeight + block.offsetTop > canvasH && fontSize > minFontSize) {
+        var topPad = block.offsetTop;
+        var bottomPad = topPad;
+        var maxBottom = topPad + (canvasH - topPad - bottomPad) * 0.9;
+        var targetMinH = canvasH * 0.5;
+
+        function setSize(s) { ps.forEach(function(p) { p.style.fontSize = s + 'px'; }); }
+        function textBottom() { return topPad + block.scrollHeight; }
+        function fits() { return textBottom() <= maxBottom; }
+
+        if (textBottom() < targetMinH) {
+          while (fontSize < maxFontSize) {
+            fontSize += 1;
+            setSize(fontSize);
+            if (!fits()) {
+              fontSize -= 1;
+              setSize(fontSize);
+              break;
+            }
+          }
+        }
+
+        while (!fits() && fontSize > minFontSize) {
           fontSize -= 1;
-          ps.forEach(function(p) { p.style.fontSize = fontSize + 'px'; });
+          setSize(fontSize);
         }
       }
+
       function scheduleScaleToFit() {
         var fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
         fontsReady.then(function() {

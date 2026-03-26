@@ -234,17 +234,28 @@ function serveWrapper(res, style, format, text, imageName) {
     .canvas-area {
       display: flex;
       justify-content: center;
+      align-items: flex-start;
       padding: 32px;
+    }
+
+    .canvas-wrapper {
+      /* This wrapper shrinks to the scaled visual size */
+      overflow: hidden;
     }
 
     .template-frame {
       box-shadow: 0 4px 24px rgba(0,0,0,0.5);
       overflow: hidden;
+      width: ${width}px;
+      height: ${height}px;
+      transform-origin: top left;
     }
 
     .template-frame iframe {
       display: block;
       border: none;
+      width: ${width}px;
+      height: ${height}px;
     }
   </style>
 </head>
@@ -276,8 +287,10 @@ function serveWrapper(res, style, format, text, imageName) {
   </div>
 
   <div class="canvas-area">
-    <div class="template-frame">
-      <iframe id="templateFrame" width="${width}" height="${height}" src="${iframeSrc}"></iframe>
+    <div class="canvas-wrapper">
+      <div class="template-frame">
+        <iframe id="templateFrame" width="${width}" height="${height}" src="${iframeSrc}"></iframe>
+      </div>
     </div>
   </div>
 
@@ -294,6 +307,31 @@ function serveWrapper(res, style, format, text, imageName) {
     document.getElementById('textInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') applyText();
     });
+
+    /* ─── Scale canvas to fit viewport ─── */
+    (function() {
+      var CANVAS_W = ${width};
+      var CANVAS_H = ${height};
+      var frame = document.querySelector('.template-frame');
+      var wrapper = document.querySelector('.canvas-wrapper');
+
+      function scaleCanvas() {
+        var pad = 64;
+        var availW = window.innerWidth - pad;
+        var toolbar = document.querySelector('.toolbar');
+        var availH = window.innerHeight - (toolbar ? toolbar.offsetHeight : 0) - pad;
+        var scaleW = availW / CANVAS_W;
+        var scaleH = availH / CANVAS_H;
+        var scale = Math.min(scaleW, scaleH, 1); // never upscale
+        frame.style.transform = 'scale(' + scale + ')';
+        // Wrapper takes the scaled dimensions so layout flows correctly
+        wrapper.style.width = Math.round(CANVAS_W * scale) + 'px';
+        wrapper.style.height = Math.round(CANVAS_H * scale) + 'px';
+      }
+
+      scaleCanvas();
+      window.addEventListener('resize', scaleCanvas);
+    })();
   </script>
 </body>
 </html>`;
