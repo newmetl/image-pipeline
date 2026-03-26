@@ -1,0 +1,4 @@
+node_modules/
+output/*.png
+output/*.jpg
+.DS_Store
